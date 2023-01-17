@@ -1,6 +1,27 @@
 console.log ("Setting up CAPI");
 
-let preventRecursion = false;
+function completeDisabled() {
+    document.getElementById("first").toggleAttribute("disabled");
+    buttonModel.set("button1Enabled", false);
+}
+
+function notComplete() {
+    var element = document.getElementById("first");
+    element.classList.toggle("complete");
+    buttonModel.set("button1Complete", true);
+}
+
+function checkEvent() {
+    buttonModel.set("button1Selected", true);
+    simcapi.Transporter.triggerCheck();
+}
+
+
+document.getElementById("first").addEventListener("click", completeDisabled);
+document.getElementById("first").addEventListener("click", notComplete);
+document.getElementById("first").addEventListener("click", checkEvent);
+
+var preventRecursion = false;
 function capiHandler (name, value) {
     if (preventRecursion) {return;}
 
@@ -18,7 +39,7 @@ function capiHandler (name, value) {
     preventRecursion = false;
 }
 
-let capi = {
+var capi = {
     defaults: {
         button1Enabled: true,
         button1Complete: false,
@@ -33,14 +54,14 @@ let capi = {
     }
 }
 
-let buttonModel = new simcapi.CapiAdapter.CapiModel (capi.defaults);
+var buttonModel = new simcapi.CapiAdapter.CapiModel (capi.defaults);
 
 function addListener (key) {
-    buttonModel.on ("change:" + key, (buttonModel, vallue) => {
+    buttonModel.on ("change:" + key, (buttonModel, value) => {
         capiHandler (key, value); })
 }
 
-let item, key;
+var item, key;
 for (key in capi.defaults) {
     item = capi.exposeWith [key];
 
@@ -50,25 +71,4 @@ for (key in capi.defaults) {
 
 simcapi.Transporter.notifyOnReady();
 
-
-function completeDisabled() {
-    document.getElementById("first").setAttribute("disabled", true);
-    buttonModel.set("button1Enabled", false);
-}
-
-function notComplete() {
-    let element = document.getElementById("first");
-    element.classList.toggle("complete");
-    buttonModel.set("button1Complete", true);
-}
-
-function checkEvent() {
-    buttonModel.set("button1Selected", true);
-    simcapi.Transporter.triggerCheck();
-}
-
-
-document.getElementById("first").addEventListener("click", completeDisabled);
-document.getElementById("first").addEventListener("click", notComplete);
-document.getElementById("first").addEventListener("click", checkEvent);
 
